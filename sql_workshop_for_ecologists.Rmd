@@ -1,0 +1,168 @@
+---
+title: "SQL For Ecologists: An Introduction"
+subtitle: "_With comparisons to both tidyverse and base R code_"  
+author: 
+  - "Valentin Lucet"
+date: 'July 2021'
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 4:3
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_duo(primary_color = "#1F4257", secondary_color = "#F97B64")
+```
+
+```{r import-data, include=FALSE, warning=FALSE}
+library(tidyverse)
+surveys <- read_csv("../data/surveys.csv")
+species <- read_csv("../data/species.csv")
+plots <- read_csv("../data/plots.csv")
+locations <- read_csv("../data/locations.csv")
+```
+
+### Prerequisites
+name: prereqs
+
+This workshop is adapted from the Data Carpentry workshop titled: [Data Management with SQL for Ecologists](https://datacarpentry.org/sql-ecology-lesson/), and aims to introduce ecologists to databases and the SQL (pronounced "sequel") language by comparing the SQL code to R code, both in base R and in the tidyverse syntax.
+
+Therefore, a basic knowledge of data manipulation in R (base or tidy-style) will be beneficial. The only other requirements are to follow the instructions for setup at [this setup link](https://datacarpentry.org/sql-ecology-lesson/setup.html). Namely:
+
+1. [Download](https://figshare.com/articles/Portal_Project_Teaching_Database/1314459) and unzip the data.
+
+2. Install [DB Browser for SQLite](http://sqlitebrowser.org/) and any required dependencies.
+
+---
+name: plan
+
+### Workshop plan
+
+1. _Introducing Databases and SQL_
+  - What is a database? 
+  - What does it mean for a database to be relational?
+  - What are the best practices in designing a database?
+
+2. _Accessing Data With Queries_
+  - What is a query?
+  - How can I export the results of a query?
+
+3. _Aggregating and Grouping Data_
+  - How can more complex queries be used to manipulate data?
+  - How does it compare to doing it in R?
+
+4. _Combining Data With Joins_
+  - Why are joins important?
+  - How can joins be tricky?
+
+---
+name: colors
+
+## Colors
+
+- <span style="color: var(--text-color)">Text Color</span>
+
+- <span style="color: var(--header-color); font-family: var(--header-font-family);">Header Color</span>
+
+- <span style="color: var(--link-color)">Link Color</span>
+
+- <span style="color: var(--text-bold-color); font-weight: bold;">Bold Color</span>
+
+- `inline code color`
+
+---
+
+# Big Topic or Inverse Slides `#`
+
+## Slide Headings `##`
+
+### Sub-slide Headings `###`
+
+#### Bold Call-Out `####`
+
+This is a normal paragraph text. Only use header levels 1-4.
+
+##### Possible, but not recommended `#####`
+
+###### Definitely don't use h6 `######`
+
+---
+class: inverse center middle
+
+# Topic Changing Interstitial
+
+--
+
+```
+class: inverse center middle
+```
+
+---
+layout: true
+
+## Blocks
+
+---
+
+### Blockquote
+
+> This is a blockquote following a header.
+>
+> When something is important enough, you do it even if the odds are not in your favor.
+
+---
+
+### Code Blocks
+
+#### R Code
+
+```{r eval=FALSE}
+ggplot(gapminder) +
+  aes(x = gdpPercap, y = lifeExp, size = pop, color = country) +
+  geom_point() +
+  facet_wrap(~year)
+```
+
+---
+
+##### SQL Code
+
+```SQL
+SELECT COUNT(*)
+FROM surveys;
+## 35549
+```
+
+##### BASE
+
+```{r}
+nrow(surveys)
+```
+
+##### TIDYVERSE
+
+```{r}
+nrow(surveys)
+```
+
+---
