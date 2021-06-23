@@ -14,7 +14,7 @@ output:
       ratio: 4:3
       countIncrementalSlides: true
 ---
-
+name: prereqs
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(
@@ -43,7 +43,6 @@ locations <- read_csv("../data/locations.csv")
 ```
 
 ### Prerequisites
-name: prereqs
 
 This workshop is adapted from the Data Carpentry workshop titled: [Data Management with SQL for Ecologists](https://datacarpentry.org/sql-ecology-lesson/), and aims to introduce ecologists to databases and the SQL (pronounced "sequel") language by comparing the SQL code to R code, both in base R and in the tidyverse syntax.
 
@@ -55,7 +54,6 @@ Therefore, a basic knowledge of data manipulation in R (base or tidy-style) will
 
 ---
 name: plan
-
 ### Workshop plan
 
 1. _Introducing Databases and SQL_
@@ -74,48 +72,93 @@ name: plan
 4. _Combining Data With Joins_
   - Why are joins important?
   - How can joins be tricky?
-
----
-name: colors
-
-## Colors
-
-- <span style="color: var(--text-color)">Text Color</span>
-
-- <span style="color: var(--header-color); font-family: var(--header-font-family);">Header Color</span>
-
-- <span style="color: var(--link-color)">Link Color</span>
-
-- <span style="color: var(--text-bold-color); font-weight: bold;">Bold Color</span>
-
-- `inline code color`
-
----
-
-# Big Topic or Inverse Slides `#`
-
-## Slide Headings `##`
-
-### Sub-slide Headings `###`
-
-#### Bold Call-Out `####`
-
-This is a normal paragraph text. Only use header levels 1-4.
-
-##### Possible, but not recommended `#####`
-
-###### Definitely don't use h6 `######`
+  
 
 ---
 class: inverse center middle
+# Introducing Databases and SQL
 
-# Topic Changing Interstitial
+---
+## Goals
 
---
+To answer simple questions about data, we might want to:
 
-```
+* Select subsets of the data (rows and columns)
+
+* Group subsets of data
+
+* Do math and other calculations
+
+* Combine data across spreadsheets
+
+Putting our data into a **relational database** and using **SQL** will help us achieve these goals.
+
+---
+## What is SQL?
+
+SQL stands for **Structured Query Language**. SQL allows us to interact with **relational databases** through **queries**. These queries can allow you to perform a number of actions such as: insert, select, update and delete information in a database.
+
+![](figures/SQL.png)
+
+---
+## What is a relational database?
+
+A **relational database** stores data in relations made up of *records* with *fields*. 
+
+* The relations are usually represented as *tables*:
+  * Record are usually shown as rows
+  * Fields are usually shown as columns
+  
+* In most cases, each record will have a *unique identifier*, called a **key**, which is stored as one of its fields.
+
+* Records may also contain keys that refer to records in other tables, which enables us to combine information from two or more sources.
+
+---
+## A relational database example
+
+The data we will be using is a (real) time-series for a small mammal community in southern Arizona. This is part of a project studying the effects of rodents and ants on the plant community. The rodents are sampled on a series of 24 plots, with different experimental manipulations controlling which rodents are allowed to access which plots.
+
+![](figures/DB.png)
+---
+## Why use relational databases?
+
+* Keeps your data separate from your analysis: this means there’s no risk of accidentally changing data when you analyze it.
+
+* If we get new data we can rerun the query.
+
+* It’s fast, even for large amounts of data.
+
+* It improves quality control of data entry (type constraints and use of forms in MS Access, Filemaker, Oracle Application Express etc.)
+
+* The concepts of relational database querying are core to understanding how to do similar things using programming languages such as R or Python.
+
+---
+## Database Design
+
+1. Every row-column combination contains a single atomic value, i.e., not containing parts we might want to work with separately.
+
+2. One field per type of information.
+
+3. No redundant information.
+
+4. Split into separate tables with one table per class of information.
+
+5. Needs an identifier in common between tables – shared column - to reconnect (known as a foreign key).
+
+---
+## SQL Data Type Quick Reference
+
+![](figures/types.png)
+---
+## Hands on
+
+1. DEMO: how to create a new database from scatch in DB Browser
+
+2. Short exercise: Explore the `portal_mammals.sqlite` database.
+
+---
 class: inverse center middle
-```
+# Accessing Data With Queries
 
 ---
 layout: true
