@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>SQL For Ecologists: An Introduction</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Valentin Lucet" />
+    <script src="index_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# SQL For Ecologists: An Introduction
+## <em>With comparisons to both tidyverse and base R code</em>
+### Valentin Lucet
+### July 2021
+
+---
+
+name: prereqs
+
+
+
+
+
+
+### Prerequisites
+
+This workshop is adapted from the Data Carpentry workshop titled: [Data Management with SQL for Ecologists](https://datacarpentry.org/sql-ecology-lesson/), and aims to introduce ecologists to databases and the SQL (pronounced "sequel") language by comparing the SQL code to R code, both in base R and in the tidyverse syntax.
+
+Therefore, a basic knowledge of data manipulation in R (base or tidy-style) will be beneficial. The only other requirements are to follow the instructions for setup at [this setup link](https://datacarpentry.org/sql-ecology-lesson/setup.html). Namely:
+
+1. [Download](https://figshare.com/articles/Portal_Project_Teaching_Database/1314459) and unzip the data.
+
+2. Install [DB Browser for SQLite](http://sqlitebrowser.org/) and any required dependencies.
+
+---
+name: plan
+### Workshop plan
+
+1. _Introducing Databases and SQL_
+  - What is a database? 
+  - What does it mean for a database to be relational?
+  - What are the best practices in designing a database?
+
+2. _Accessing Data With Queries_
+  - What is a query?
+  - How can I export the results of a query?
+
+3. _Aggregating and Grouping Data_
+  - How can more complex queries be used to manipulate data?
+  - How does it compare to doing it in R?
+
+4. _Combining Data With Joins_
+  - Why are joins important?
+  - How can joins be tricky?
+  
+
+---
+class: inverse center middle
+# Introducing Databases and SQL
+
+---
+## Goals
+
+To answer simple questions about data, we might want to:
+
+* Select subsets of the data (rows and columns)
+
+* Group subsets of data
+
+* Do math and other calculations
+
+* Combine data across spreadsheets
+
+Putting our data into a **relational database** and using **SQL** will help us achieve these goals.
+
+---
+## What is SQL?
+
+SQL stands for **Structured Query Language**. SQL allows us to interact with **relational databases** through **queries**. These queries can allow you to perform a number of actions such as: insert, select, update and delete information in a database.
+
+![](figures/SQL.png)
+
+---
+## What is a relational database?
+
+A **relational database** stores data in relations made up of *records* with *fields*. 
+
+* The relations are usually represented as *tables*:
+  * Record are usually shown as rows
+  * Fields are usually shown as columns
+  
+* In most cases, each record will have a *unique identifier*, called a **key**, which is stored as one of its fields.
+
+* Records may also contain keys that refer to records in other tables, which enables us to combine information from two or more sources.
+
+---
+## A relational database example
+
+The data we will be using is a (real) time-series for a small mammal community in southern Arizona. This is part of a project studying the effects of rodents and ants on the plant community. The rodents are sampled on a series of 24 plots, with different experimental manipulations controlling which rodents are allowed to access which plots.
+
+![](figures/DB.png)
+---
+## Why use relational databases?
+
+* Keeps your data separate from your analysis: this means there’s no risk of accidentally changing data when you analyze it.
+
+* If we get new data we can rerun the query.
+
+* It’s fast, even for large amounts of data.
+
+* It improves quality control of data entry (type constraints and use of forms in MS Access, Filemaker, Oracle Application Express etc.)
+
+* The concepts of relational database querying are core to understanding how to do similar things using programming languages such as R or Python.
+
+---
+## Database Design
+
+1. Every row-column combination contains a single atomic value, i.e., not containing parts we might want to work with separately.
+
+2. One field per type of information.
+
+3. No redundant information.
+
+4. Split into separate tables with one table per class of information.
+
+5. Needs an identifier in common between tables – shared column - to reconnect (known as a foreign key).
+
+---
+## SQL Data Type Quick Reference
+
+![](figures/types.png)
+---
+## Hands on
+
+1. DEMO: how to create a new database from scatch in DB Browser
+
+2. Short exercise: Explore the `portal_mammals.sqlite` database.
+
+---
+class: inverse center middle
+# Accessing Data With Queries
+
+---
+layout: true
+
+## Blocks
+
+---
+
+### Blockquote
+
+&gt; This is a blockquote following a header.
+&gt;
+&gt; When something is important enough, you do it even if the odds are not in your favor.
+
+---
+
+### Code Blocks
+
+#### R Code
+
+
+```r
+ggplot(gapminder) +
+  aes(x = gdpPercap, y = lifeExp, size = pop, color = country) +
+  geom_point() +
+  facet_wrap(~year)
+```
+
+---
+
+##### SQL Code
+
+```SQL
+SELECT COUNT(*)
+FROM surveys;
+## 35549
+```
+
+##### BASE
+
+
+```r
+nrow(surveys)
+```
+
+```
+## [1] 35549
+```
+
+##### TIDYVERSE
+
+
+```r
+nrow(surveys)
+```
+
+```
+## [1] 35549
+```
+
+---
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "4:3",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
