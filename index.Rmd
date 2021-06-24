@@ -154,40 +154,35 @@ The data we will be using is a (real) time-series for a small mammal community i
 
 1. DEMO: how to create a new database from scatch in DB Browser
 
-2. Short exercise: Explore the `portal_mammals.sqlite` database.
+2. Short exercise: Explore the `portal_mammals.sqlite` database add a new field to one of the tables.
 
 ---
 class: inverse center middle
 # Accessing Data With Queries
 
 ---
-layout: true
+## A first SQL Query
+##### SQL Code
 
-## Blocks
+```SQL
+SELECT *
+FROM surveys;
+```
 
----
+##### BASE
 
-### Blockquote
+```{r  = FALSE}
+surveys[,]
+```
 
-> This is a blockquote following a header.
->
-> When something is important enough, you do it even if the odds are not in your favor.
+##### TIDYVERSE
 
----
-
-### Code Blocks
-
-#### R Code
-
-```{r eval=FALSE}
-ggplot(gapminder) +
-  aes(x = gdpPercap, y = lifeExp, size = pop, color = country) +
-  geom_point() +
-  facet_wrap(~year)
+```{r}
+surveys %>% select(everything())
 ```
 
 ---
-
+## Counting
 ##### SQL Code
 
 ```SQL
@@ -207,5 +202,3 @@ nrow(surveys)
 ```{r}
 nrow(surveys)
 ```
-
----

@@ -137,41 +137,71 @@ The data we will be using is a (real) time-series for a small mammal community i
 
 1. DEMO: how to create a new database from scatch in DB Browser
 
-2. Short exercise: Explore the `portal_mammals.sqlite` database.
+2. Short exercise: Explore the `portal_mammals.sqlite` database add a new field to one of the tables.
 
 ---
 class: inverse center middle
 # Accessing Data With Queries
 
 ---
-layout: true
+## A first SQL Query
+##### SQL Code
 
-## Blocks
+```SQL
+SELECT *
+FROM surveys;
+```
 
----
-
-### Blockquote
-
-&gt; This is a blockquote following a header.
-&gt;
-&gt; When something is important enough, you do it even if the odds are not in your favor.
-
----
-
-### Code Blocks
-
-#### R Code
+##### BASE
 
 
 ```r
-ggplot(gapminder) +
-  aes(x = gdpPercap, y = lifeExp, size = pop, color = country) +
-  geom_point() +
-  facet_wrap(~year)
+surveys[,]
+```
+
+```
+## # A tibble: 35,549 x 9
+##    record_id month   day  year plot_id species_id sex   hindfoot_length weight
+##        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;           &lt;dbl&gt;  &lt;dbl&gt;
+##  1         1     7    16  1977       2 NL         M                  32     NA
+##  2         2     7    16  1977       3 NL         M                  33     NA
+##  3         3     7    16  1977       2 DM         F                  37     NA
+##  4         4     7    16  1977       7 DM         M                  36     NA
+##  5         5     7    16  1977       3 DM         M                  35     NA
+##  6         6     7    16  1977       1 PF         M                  14     NA
+##  7         7     7    16  1977       2 PE         F                  NA     NA
+##  8         8     7    16  1977       1 DM         M                  37     NA
+##  9         9     7    16  1977       1 DM         F                  34     NA
+## 10        10     7    16  1977       6 PF         F                  20     NA
+## # … with 35,539 more rows
+```
+
+##### TIDYVERSE
+
+
+```r
+surveys %&gt;% select(everything())
+```
+
+```
+## # A tibble: 35,549 x 9
+##    record_id month   day  year plot_id species_id sex   hindfoot_length weight
+##        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;           &lt;dbl&gt;  &lt;dbl&gt;
+##  1         1     7    16  1977       2 NL         M                  32     NA
+##  2         2     7    16  1977       3 NL         M                  33     NA
+##  3         3     7    16  1977       2 DM         F                  37     NA
+##  4         4     7    16  1977       7 DM         M                  36     NA
+##  5         5     7    16  1977       3 DM         M                  35     NA
+##  6         6     7    16  1977       1 PF         M                  14     NA
+##  7         7     7    16  1977       2 PE         F                  NA     NA
+##  8         8     7    16  1977       1 DM         M                  37     NA
+##  9         9     7    16  1977       1 DM         F                  34     NA
+## 10        10     7    16  1977       6 PF         F                  20     NA
+## # … with 35,539 more rows
 ```
 
 ---
-
+## Counting
 ##### SQL Code
 
 ```SQL
@@ -201,8 +231,6 @@ nrow(surveys)
 ```
 ## [1] 35549
 ```
-
----
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
