@@ -102,6 +102,7 @@ A **relational database** stores data in relations made up of *records* with *fi
 The data we will be using is a (real) time-series for a small mammal community in southern Arizona. This is part of a project studying the effects of rodents and ants on the plant community. The rodents are sampled on a series of 24 plots, with different experimental manipulations controlling which rodents are allowed to access which plots.
 
 ![](figures/DB.png)
+
 ---
 ## Why use relational databases?
 
@@ -132,6 +133,7 @@ The data we will be using is a (real) time-series for a small mammal community i
 ## SQL Data Type Quick Reference
 
 ![](figures/types.png)
+
 ---
 ## Hands on
 
@@ -148,7 +150,6 @@ class: inverse center middle
 ---
 ## Selecting
 #### *Selecting all records*
-##### SQL
 
 ```SQL
 SELECT *
@@ -173,7 +174,6 @@ surveys %&gt;% select(everything())
 ---
 ## Selecting
 #### *Selecting a column*
-##### SQL
 
 ```SQL
 SELECT year
@@ -198,7 +198,6 @@ surveys %&gt;% select(year)
 ---
 ## Selecting
 #### *Selecting multiple columns*
-##### SQL
 
 ```SQL
 SELECT year, month, day
@@ -223,7 +222,6 @@ surveys %&gt;% select(year, month, day)
 ---
 ## Limiting results
 #### *Limiting to the 10 first records*
-##### SQL
 
 ```SQL
 SELECT *
@@ -249,7 +247,6 @@ surveys %&gt;% select(everything()) %&gt;% slice(1:10)
 ---
 ## Unique values
 #### *Get all unique value for a column*
-##### SQL
 
 ```SQL
 SELECT DISTINCT species_id
@@ -274,7 +271,6 @@ surveys %&gt;% select(species_id) %&gt;% unique()
 ---
 ## Unique values
 #### *Get all unique value for a combination of columns*
-##### SQL
 
 ```SQL
 SELECT DISTINCT year, species_id
@@ -299,7 +295,6 @@ surveys %&gt;% select(year, species_id) %&gt;% unique()
 ---
 ## Calculated values
 #### *Calculating values on the fly*
-##### SQL
 
 ```SQL
 SELECT year, month, day, weight * 1000
@@ -323,10 +318,219 @@ surveys %&gt;% select( year, month, day, weight) %&gt;%
   mutate(weight_1000 = weight * 1000)
 ```
 
+---
+## Filtering data
+#### *Filter based on a variable*
+
+```SQL
+SELECT *
+FROM surveys
+WHERE species_id='DM';
+```
+--
+
+##### BASE
+
+
+```r
+surveys[surveys$species_id == 'DM',]
+```
+
+##### TIDYVERSE
+
+
+```r
+surveys %&gt;% filter(species_id == 'DM')
+```
+
+---
+## Filtering data
+#### *Filter based on a variable (2)*
+
+```SQL
+SELECT * FROM surveys
+WHERE year &gt;= 2000;
+```
+--
+
+##### BASE
+
+
+```r
+surveys[surveys$year &gt;= 2000,]
+```
+
+##### TIDYVERSE
+
+
+```r
+surveys %&gt;% filter(year &gt;= 2000)
+```
+
+---
+## Filtering data
+#### *Filter based on two variables*
+
+```SQL
+SELECT *
+FROM surveys
+WHERE (year &gt;= 2000) AND (species_id = 'DM');
+```
+--
+
+##### BASE
+
+
+```r
+surveys[surveys$year &gt;= 2000 &amp; surveys$species_id == 'DM',] # Will include NAs
+```
+
+##### TIDYVERSE
+
+
+```r
+surveys %&gt;% filter(year &gt;= 2000, species_id == 'DM') # Will ignore NAs, like SQL
+```
+
+---
+## Filtering data
+#### *Filter based on two variables (3)*
+
+```SQL
+SELECT *
+FROM surveys
+WHERE (year &gt;= 2000) AND (species_id IN ('DM', 'DO', 'DS'));
+```
+--
+
+##### BASE
+
+
+```r
+surveys[surveys$year &gt;= 2000 &amp; surveys$species_id %in% c('DM', 'DO', 'DS'),]
+```
+
+##### TIDYVERSE
+
+
+```r
+surveys %&gt;% filter(year &gt;= 2000, species_id %in% c('DM', 'DO', 'DS'))
+```
+
+---
+## Comments
+#### *Commenting complex quesies*
+
+```SQL
+-- Get post 2000 data on Dipodomys' species
+-- These are in the surveys table, and we are interested in all columns
+SELECT * FROM surveys
+-- Sampling year is in the column `year`, and we want to include 2000
+WHERE (year &gt;= 2000)
+-- Dipodomys' species have the `species_id` DM, DO, and DS
+AND (species_id IN ('DM', 'DO', 'DS'));
+```
+
+---
+## Sorting data
+#### *Sorting based on a variable*
+
+```SQL
+SELECT *
+FROM species
+ORDER BY taxa ASC;
+```
+--
+
+##### BASE
+
+
+```r
+species[order(species$taxa),]
+```
+
+##### TIDYVERSE
+
+
+```r
+species %&gt;% arrange(taxa)
+```
+
+---
+## Sorting data
+#### *Sorting based on a variable (2)*
+
+```SQL
+SELECT *
+FROM species
+ORDER BY taxa DESC;
+```
+--
+
+##### BASE
+
+
+```r
+species[order(species$taxa, decreasing = TRUE),]
+```
+
+##### TIDYVERSE
+
+
+```r
+species %&gt;% arrange(desc(taxa))
+```
+
+---
+## Sorting data
+#### *Sorting based on two variables*
+
+```SQL
+SELECT *
+FROM species
+ORDER BY genus ASC, species ASC;
+```
+--
+
+##### BASE
+
+
+```r
+idx &lt;- do.call(order, as.list(species[,c("genus", "species")]))
+species[idx,]
+```
+
+##### TIDYVERSE
+
+
+```r
+species %&gt;% arrange(genus, species)
+```
+
+---
+## Order of execution
+
+We don’t actually have to display a column to sort by it. For example, let’s say we want to order the birds by their species ID, but we only want to see genus and species.
+
+```SQL
+SELECT genus, species
+FROM species
+WHERE taxa = 'Bird'
+ORDER BY species_id ASC;
+```
+
+The computer is basically doing this:
+
+1. Filtering rows according to `WHERE`
+2. Sorting results according to `ORDER BY`
+3. Displaying requested columns or expressions.
+
+---
+class: inverse center middle
+# Aggregating and Grouping Data
 
 ---
 ## Counting
-##### SQL
 
 ```SQL
 SELECT COUNT(*)
