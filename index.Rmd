@@ -154,51 +154,196 @@ The data we will be using is a (real) time-series for a small mammal community i
 
 1. DEMO: how to create a new database from scatch in DB Browser
 
-2. Short exercise: Explore the `portal_mammals.sqlite` database add a new field to one of the tables.
+2. Short exercise: Explore the `portal_mammals.sqlite` database 
+  
+  a. Add a new field to one of the tables.
 
 ---
 class: inverse center middle
 # Accessing Data With Queries
 
 ---
-## A first SQL Query
-##### SQL Code
+## Selecting
+#### *Selecting all records*
+##### SQL
 
 ```SQL
 SELECT *
 FROM surveys;
 ```
+--
 
 ##### BASE
 
-```{r  = FALSE}
+```{r, results = FALSE}
 surveys[,]
 ```
 
 ##### TIDYVERSE
 
-```{r}
+```{r, results = FALSE}
 surveys %>% select(everything())
 ```
 
 ---
+## Selecting
+#### *Selecting a column*
+##### SQL
+
+```SQL
+SELECT year
+FROM surveys;
+```
+--
+
+##### BASE
+
+```{r, results = FALSE}
+surveys[,"year"]
+```
+
+##### TIDYVERSE
+
+```{r, results = FALSE}
+surveys %>% select(year)
+```
+
+---
+## Selecting
+#### *Selecting multiple columns*
+##### SQL
+
+```SQL
+SELECT year, month, day
+FROM surveys;
+```
+--
+
+##### BASE
+
+```{r, results = FALSE}
+surveys[,c("year", "month", "day")]
+```
+
+##### TIDYVERSE
+
+```{r, results = FALSE}
+surveys %>% select(year, month, day)
+```
+
+---
+## Limiting results
+#### *Limiting to the 10 first records*
+##### SQL
+
+```SQL
+SELECT *
+FROM surveys
+LIMIT 10; 
+```
+--
+
+##### BASE
+
+```{r, results = FALSE}
+surveys[1:10,]
+```
+
+##### TIDYVERSE
+
+```{r, results = FALSE}
+surveys %>% select(everything()) %>% slice(1:10)
+```
+
+---
+## Unique values
+#### *Get all unique value for a column*
+##### SQL
+
+```SQL
+SELECT DISTINCT species_id
+FROM surveys;
+```
+--
+
+##### BASE
+
+```{r, results = FALSE}
+unique(surveys[,"species_id"])
+```
+
+##### TIDYVERSE
+
+```{r, results = FALSE}
+surveys %>% select(species_id) %>% unique()
+```
+
+---
+## Unique values
+#### *Get all unique value for a combination of columns*
+##### SQL
+
+```SQL
+SELECT DISTINCT year, species_id
+FROM surveys;
+```
+--
+
+##### BASE
+
+```{r, results = FALSE}
+unique(surveys[,c("year", "species_id")])
+```
+
+##### TIDYVERSE
+
+```{r, results = FALSE}
+surveys %>% select(year, species_id) %>% unique()
+```
+
+---
+## Calculated values
+#### *Calculating values on the fly*
+##### SQL
+
+```SQL
+SELECT year, month, day, weight * 1000
+FROM surveys;
+```
+--
+
+##### BASE
+
+```{r, results = FALSE}
+surveys_tmp <- surveys[,c("year", "month", "day", "weight")]
+surveys_tmp$weight_1000 <- surveys_tmp$weight * 1000
+```
+
+##### TIDYVERSE
+
+```{r, results = FALSE}
+surveys %>% select( year, month, day, weight) %>% 
+  mutate(weight_1000 = weight * 1000)
+```
+
+
+---
 ## Counting
-##### SQL Code
+##### SQL
 
 ```SQL
 SELECT COUNT(*)
 FROM surveys;
-## 35549
 ```
 
 ##### BASE
 
-```{r}
+```{r, results = FALSE}
 nrow(surveys)
 ```
 
 ##### TIDYVERSE
 
-```{r}
+```{r, results = FALSE}
 nrow(surveys)
 ```
