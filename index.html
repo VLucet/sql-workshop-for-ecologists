@@ -40,22 +40,22 @@ name: plan
 ### Workshop plan
 
 1. _Introducing Databases and SQL_
-  - What is a database? 
-  - What does it mean for a database to be relational?
-  - What are the best practices in designing a database?
+- What is a database? 
+- What does it mean for a database to be relational?
+- What are the best practices in designing a database?
 
 2. _Accessing Data With Queries_
-  - What is a query?
-  - How can I export the results of a query?
+- What is a query?
+- How can I export the results of a query?
 
 3. _Aggregating and Grouping Data_
-  - How can more complex queries be used to manipulate data?
-  - How does it compare to doing it in R?
+- How can more complex queries be used to manipulate data?
+- How does it compare to doing it in R?
 
 4. _Combining Data With Joins_
-  - Why are joins important?
-  - How can joins be tricky?
-  
+- Why are joins important?
+- How can joins be tricky?
+
 
 ---
 class: inverse center middle
@@ -89,9 +89,9 @@ SQL stands for **Structured Query Language**. SQL allows us to interact with **r
 A **relational database** stores data in relations made up of *records* with *fields*. 
 
 * The relations are usually represented as *tables*:
-  * Record are usually shown as rows
-  * Fields are usually shown as columns
-  
+* Record are usually shown as rows
+* Fields are usually shown as columns
+
 * In most cases, each record will have a *unique identifier*, called a **key**, which is stored as one of its fields.
 
 * Records may also contain keys that refer to records in other tables, which enables us to combine information from two or more sources.
@@ -140,8 +140,8 @@ The data we will be using is a (real) time-series for a small mammal community i
 1. DEMO: how to create a new database from scatch in DB Browser
 
 2. Short exercise: Explore the `portal_mammals.sqlite` database 
-  
-  a. Add a new field to one of the tables.
+
+a. Add a new field to one of the tables.
 
 ---
 class: inverse center middle
@@ -530,7 +530,8 @@ class: inverse center middle
 # Aggregating and Grouping Data
 
 ---
-## Counting
+## Summarizing data
+#### *Counting records*
 
 ```SQL
 SELECT COUNT(*)
@@ -550,6 +551,141 @@ nrow(surveys)
 ```r
 nrow(surveys)
 ```
+
+---
+## Summarizing data
+#### *Find the sum of a column*
+
+```SQL
+SELECT COUNT(*), SUM(weight)
+FROM surveys;
+```
+
+##### BASE
+
+
+```r
+data.frame(count = nrow(surveys), 
+           sum = sum(surveys$weight, na.rm = TRUE))
+```
+
+##### TIDYVERSE
+
+
+```r
+surveys %&gt;% 
+  select(weight) %&gt;% 
+  summarise(count = n(), weight = sum(weight, na.rm = TRUE))
+```
+
+---
+## Summarizing data
+#### *More complex calculations*
+
+```SQL
+SELECT ROUND(SUM(weight)/1000.00, 3)
+FROM surveys;
+```
+
+##### BASE
+
+
+```r
+round(sum(surveys$weight/1000, na.rm = TRUE), 3)
+```
+
+##### TIDYVERSE
+
+
+```r
+surveys %&gt;% 
+  select(weight) %&gt;% 
+  summarise(round(sum(weight/1000, na.rm = TRUE), 3))
+```
+
+---
+## Grouping data
+#### *Grouping by a variable*
+
+```SQL
+SELECT species_id, COUNT(*)
+FROM surveys
+GROUP BY species_id;
+```
+
+##### BASE
+
+
+```r
+aggregate(surveys$record_id, 
+          by = list(species_id = surveys$species_id), 
+          FUN = length)
+```
+
+##### TIDYVERSE
+
+
+```r
+surveys %&gt;% 
+  group_by(species_id) %&gt;% 
+  summarise(count = n())
+```
+
+---
+## Ordering aggregated data
+#### *Grouping by a variable*
+
+```SQL
+SELECT species_id, COUNT(*)
+FROM surveys
+GROUP BY species_id
+ORDER BY COUNT(species_id);
+```
+
+##### BASE
+
+
+```r
+surveys_ag &lt;- aggregate(surveys$record_id, 
+                        by = list(species_id = surveys$species_id), 
+                        FUN = length)
+surveys_ag[order(surveys_ag$x),]
+```
+
+##### TIDYVERSE
+
+
+```r
+surveys %&gt;% 
+  group_by(species_id) %&gt;% 
+  summarise(count = n()) %&gt;% 
+  arrange(count)
+```
+
+---
+## Aliases
+#### *Storing variables as aliases*
+
+```SQL
+SELECT MAX(year) AS last_surveyed_year
+FROM surveys;
+```
+AS is actually not needed:
+```SQL
+SELECT MAX(year) last_surveyed_year
+FROM surveys;
+```
+Tables can have aliases
+```SQL
+SELECT *
+FROM surveys AS surv;
+```
+or
+```SQL
+SELECT *
+FROM surveys surv;
+```
+---
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
