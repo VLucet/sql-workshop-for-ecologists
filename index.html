@@ -3,7 +3,7 @@
   <head>
     <title>SQL For Ecologists: An Introduction</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Valentin Lucet" />
+    <meta name="author" content="Valentin Lucet, M.Sc." />
     <script src="index_files/header-attrs/header-attrs.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -13,7 +13,7 @@ class: center, middle, inverse, title-slide
 
 # SQL For Ecologists: An Introduction
 ## <em>With comparisons to both tidyverse and base R code</em>
-### Valentin Lucet
+### Valentin Lucet, M.Sc.
 ### July 2021
 
 ---
@@ -40,21 +40,18 @@ name: plan
 ### Workshop plan
 
 1. _Introducing Databases and SQL_
-- What is a database? 
-- What does it mean for a database to be relational?
-- What are the best practices in designing a database?
-
+  - What is a database? 
+  - What does it mean for a database to be relational?
+  - What are the best practices in designing a database?
 2. _Accessing Data With Queries_
-- What is a query?
-- How can I export the results of a query?
-
+  - What is a query?
+  - How can I export the results of a query?
 3. _Aggregating and Grouping Data_
-- How can more complex queries be used to manipulate data?
-- How does it compare to doing it in R?
-
+  - How can more complex queries be used to manipulate data?
+  - How does it compare to doing it in R?
 4. _Combining Data With Joins_
-- Why are joins important?
-- How can joins be tricky?
+  - Why are joins important?
+  - How can joins be tricky?
 
 
 ---
@@ -62,7 +59,7 @@ class: inverse center middle
 # Introducing Databases and SQL
 
 ---
-## Goals
+## What is SQL?
 
 To answer simple questions about data, we might want to:
 
@@ -81,7 +78,9 @@ Putting our data into a **relational database** and using **SQL** will help us a
 
 SQL stands for **Structured Query Language**. SQL allows us to interact with **relational databases** through **queries**. These queries can allow you to perform a number of actions such as: insert, select, update and delete information in a database.
 
+.center[
 ![](figures/SQL.png)
+]
 
 ---
 ## What is a relational database?
@@ -101,7 +100,9 @@ A **relational database** stores data in relations made up of *records* with *fi
 
 The data we will be using is a (real) time-series for a small mammal community in southern Arizona. This is part of a project studying the effects of rodents and ants on the plant community. The rodents are sampled on a series of 24 plots, with different experimental manipulations controlling which rodents are allowed to access which plots.
 
+.center[
 ![](figures/DB.png)
+]
 
 ---
 ## Why use relational databases?
@@ -132,7 +133,9 @@ The data we will be using is a (real) time-series for a small mammal community i
 ---
 ## SQL Data Type Quick Reference
 
+.center[
 ![](figures/types.png)
+]
 
 ---
 ## Hands on
@@ -141,7 +144,7 @@ The data we will be using is a (real) time-series for a small mammal community i
 
 2. Short exercise: Explore the `portal_mammals.sqlite` database 
 
-a. Add a new field to one of the tables.
+  a. Add a new field to one of the tables.
 
 ---
 class: inverse center middle
@@ -394,7 +397,7 @@ surveys %&gt;% filter(year &gt;= 2000, species_id == 'DM') # Will ignore NAs, li
 
 ---
 ## Filtering data
-#### *Filter based on two variables (3)*
+#### *Filter based on two variables (2)*
 
 ```SQL
 SELECT *
@@ -538,6 +541,8 @@ SELECT COUNT(*)
 FROM surveys;
 ```
 
+--
+
 ##### BASE
 
 
@@ -560,6 +565,8 @@ nrow(surveys)
 SELECT COUNT(*), SUM(weight)
 FROM surveys;
 ```
+
+--
 
 ##### BASE
 
@@ -587,6 +594,8 @@ SELECT ROUND(SUM(weight)/1000.00, 3)
 FROM surveys;
 ```
 
+--
+
 ##### BASE
 
 
@@ -612,6 +621,8 @@ SELECT species_id, COUNT(*)
 FROM surveys
 GROUP BY species_id;
 ```
+
+--
 
 ##### BASE
 
@@ -642,6 +653,8 @@ GROUP BY species_id
 ORDER BY COUNT(species_id);
 ```
 
+--
+
 ##### BASE
 
 
@@ -658,7 +671,7 @@ surveys_ag[order(surveys_ag$x),]
 ```r
 surveys %&gt;% 
   group_by(species_id) %&gt;% 
-  summarise(count = n()) %&gt;% 
+  summarise(count = n()) %&gt;% # Will keep NA row, like in SQL
   arrange(count)
 ```
 
@@ -675,17 +688,336 @@ AS is actually not needed:
 SELECT MAX(year) last_surveyed_year
 FROM surveys;
 ```
-Tables can have aliases
+Tables can have aliases:
 ```SQL
 SELECT *
 FROM surveys AS surv;
 ```
-or
+Or:
 ```SQL
 SELECT *
 FROM surveys surv;
 ```
+
 ---
+## Filtering aggregated data
+#### *The HAVING keyword*
+
+```SQL
+SELECT species_id, COUNT(species_id)
+FROM surveys
+GROUP BY species_id
+HAVING COUNT(species_id) &gt; 10;
+```
+--
+
+##### BASE
+
+
+```r
+surveys_ag &lt;- aggregate(surveys$record_id, 
+                        by = list(species_id = surveys$species_id), 
+                        FUN = length)
+surveys_ag[surveys_ag$x &gt; 10,]
+```
+
+##### TIDYVERSE
+
+
+```r
+surveys %&gt;% 
+  group_by(species_id) %&gt;% 
+  summarise(count = n()) %&gt;% 
+  filter(count &gt; 10)
+```
+
+---
+## Filtering aggregated data
+#### *The HAVING keyword*
+
+The HAVING keyword works exactly like the WHERE keyword, but uses aggregate functions instead of database fields to filter.
+You can use the AS keyword to assign an alias to a column or table, and refer to that alias in the HAVING clause.
+
+```SQL
+SELECT species_id, COUNT(species_id) AS occurrences
+FROM surveys
+GROUP BY species_id
+HAVING occurrences &gt; 10;
+```
+
+---
+## Saving Queries
+#### *Views allows us to save queries*
+
+```SQL
+CREATE VIEW summer_2000 AS
+SELECT *
+FROM surveys
+WHERE year = 2000 AND (month &gt; 4 AND month &lt; 10);
+```
+
+```SQL
+SELECT *
+FROM summer_2000
+WHERE species_id = 'PE';
+```
+
+---
+## What about NULL values?
+#### *Behavior around NULL values is important to know*
+
+You might want to use a SQL function like `AVG` to calculate the mean:
+```SQL
+SELECT AVG(weight)
+FROM summer_2000
+WHERE species_id = 'PE';
+-- 20.6666666666667
+```
+If you try to calculate it yourself you will get a different answer:
+```SQL
+SELECT SUM(weight), COUNT(*), SUM(weight)/COUNT(*)
+FROM summer_2000
+WHERE species_id = 'PE';
+-- 12.4
+```
+This is because `COUNT` also counted NULL records.
+
+---
+## What about NULL values?
+#### *Behavior around NULL values is important to know*
+
+We can get away with it by counting on `weight` instead of `*`.
+```SQL
+SELECT SUM(weight), COUNT(weight), SUM(weight)/COUNT(weight)
+FROM summer_2000
+WHERE species_id = 'PE';
+```
+Therefore `COUNT(field)` can return something different than `COUNT(*)`.
+
+---
+## What about NULL values?
+#### *Behavior around NULL values is important to know*
+
+Another issue can arise from negative queries:
+```SQL
+SELECT COUNT(*) FROM summer_2000
+WHERE sex != 'F';
+-- 382
+```
+```SQL
+SELECT COUNT(*) FROM summer_2000
+WHERE sex != 'M';
+-- 366
+```
+```SQL
+SELECT COUNT(*) FROM summer_2000;
+-- 793 yet 382 + 366 = 748
+```
+Because for negative queries SQL doesn't include NULL values, the results not match.
+
+---
+## What about NULL values?
+#### *Behavior around NULL values is important to know*
+
+We can be explicit about null values in negative queries:
+```SQL
+SELECT COUNT(*)
+FROM summer_2000
+WHERE sex != 'M' OR sex IS NULL;
+```
+---
+class: inverse center middle
+# Combining Data With Joins
+
+---
+## Joining data
+#### *Joining data is a common data manipulation operation*
+
+.center[
+![](figures/sql-joins.png)
+]
+
+---
+## Joining data
+#### *Inner join between 2 tables*
+
+By default, `JOIN` operates an inner join, 
+
+```SQL
+SELECT * 
+FROM surveys 
+JOIN species
+ON surveys.species_id = species.species_id;
+
+```
+Equivalent to:
+
+```SQL
+SELECT * 
+FROM surveys
+JOIN species
+USING (species_id);
+```
+
+---
+## Joining data
+#### *Inner join between 2 tables (2)*
+##### BASE
+
+
+```r
+merge(surveys, species, by = "species_id")
+```
+
+##### TIDYVERSE
+
+
+```r
+surveys %&gt;% 
+  inner_join(species, by = "species_id")
+```
+
+---
+## Joining data
+#### *Inner join between 2 tables (2)*
+
+You can specify which columns from which tables you want to keep:
+```SQL
+SELECT surveys.year, surveys.month, surveys.day, species.species
+FROM surveys
+JOIN species
+ON surveys.species_id = species.species_id;
+```
+Many databases, including SQLite, also support a join through the WHERE clause of a query.
+For example, you may see the query above written without an explicit JOIN.
+```SQL
+SELECT surveys.year, surveys.month, surveys.day, species.species
+FROM surveys, species
+WHERE surveys.species_id = species.species_id;
+```
+
+---
+## Joining data
+#### *Inner join returns a different number of rows*
+
+##### SQL
+```SQL
+SELECT COUNT(*)
+FROM surveys
+JOIN species
+USING (species_id);
+-- 34786
+```
+
+```SQL
+SELECT COUNT(*) FROM surveys;
+-- 35549
+```
+
+---
+## Joining data
+#### *Left join, in this case, preserves the number of rows*
+
+##### SQL
+```SQL
+SELECT *
+FROM surveys
+LEFT JOIN species
+USING (species_id);
+```
+
+--
+
+##### BASE
+
+
+```r
+merge(surveys, species, by = "species_id", all.x = TRUE)
+```
+
+##### TIDYVERSE
+
+
+```r
+surveys %&gt;% 
+  left_join(species, by = "species_id")
+```
+
+
+---
+## Joining data
+#### *Combining joins with sorting and aggregation*
+
+##### SQL
+```SQL
+SELECT plots.plot_type, AVG(surveys.weight)
+FROM surveys
+JOIN plots
+ON surveys.plot_id = plots.plot_id
+GROUP BY plots.plot_type;
+```
+
+--
+
+##### BASE
+
+
+```r
+surveys_tmp &lt;- surveys[, c("plot_id", "weight")]
+surveys_tmp_merged &lt;- merge(surveys_tmp, plots, by = "plot_id")
+surveys_tmp_merged &lt;- surveys_tmp_merged[!is.na(surveys_tmp_merged$weight),]
+aggregate(surveys_tmp_merged$weight, 
+          by = list(plot_type = surveys_tmp_merged$plot_type), 
+          FUN = mean)
+```
+
+##### TIDYVERSE
+
+
+```r
+surveys %&gt;% 
+  select(plot_id, weight) %&gt;% 
+  left_join(plots, by = "plot_id") %&gt;% 
+  group_by(plot_type) %&gt;% 
+  summarise(avg_weight = mean(weight, na.rm = TRUE))
+```
+
+---
+## More data manipulation
+#### *The `COALESCE` function*
+
+##### SQL
+```SQL
+-- Note the renaming of columns
+SELECT species_id as old_spe, day, month, year,
+COALESCE(species_id, 'XX') AS species_id
+FROM surveys;
+```
+---
+## More data manipulation
+#### *The `COALESCE` function*
+
+`COALESCE` allows us to specify a value to use in place of `NULL`
+
+##### BASE
+
+
+```r
+surveys_tmp &lt;- surveys[, c("species_id", "day", "month", "year")]
+surveys_tmp$old_spe &lt;- surveys$species_id
+surveys_tmp$species_id[is.na(surveys_tmp$old_spe)] &lt;- "XX"
+surveys_tmp
+```
+
+##### TIDYVERSE
+
+
+```r
+surveys %&gt;% 
+  select(old_spe = species_id, day, month, year) %&gt;% 
+  mutate(species_id = coalesce(old_spe, "XX"))
+```
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
