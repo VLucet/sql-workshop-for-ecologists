@@ -42,6 +42,17 @@ plots <- read_csv("../data/plots.csv")
 locations <- read_csv("../data/locations.csv")
 ```
 
+```{r xaringanExtra-allextras, echo=FALSE}
+xaringanExtra::use_share_again()
+xaringanExtra::use_broadcast()
+xaringanExtra::use_scribble()
+xaringanExtra::use_animate_css()
+xaringanExtra::use_animate_all("slide_left")
+xaringanExtra::use_panelset()
+xaringanExtra::use_clipboard()
+xaringanExtra::use_fit_screen()
+```
+
 ### Prerequisites
 
 This workshop is adapted from the Data Carpentry workshop titled: [Data Management with SQL for Ecologists](https://datacarpentry.org/sql-ecology-lesson/), and aims to introduce ecologists to databases and the SQL (pronounced "sequel") language by comparing the SQL code to R code, both in base R and in the tidyverse syntax.
@@ -162,6 +173,8 @@ The data we will be using is a (real) time-series for a small mammal community i
 2. Short exercise: Explore the `portal_mammals.sqlite` database 
 
   a. Add a new field to one of the tables.
+  
+  b. Add a new row to one of the tables
 
 ---
 class: inverse center middle
@@ -323,6 +336,9 @@ surveys_tmp$weight_1000 <- surveys_tmp$weight * 1000
 surveys %>% select( year, month, day, weight) %>% 
   mutate(weight_1000 = weight * 1000)
 ```
+
+---
+## Hands on
 
 ---
 ## Filtering data

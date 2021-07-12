@@ -5,6 +5,28 @@
     <meta charset="utf-8" />
     <meta name="author" content="Valentin Lucet, M.Sc." />
     <script src="index_files/header-attrs/header-attrs.js"></script>
+    <script src="index_files/clipboard/clipboard.min.js"></script>
+    <link href="index_files/shareon/shareon.min.css" rel="stylesheet" />
+    <script src="index_files/shareon/shareon.min.js"></script>
+    <link href="index_files/xaringanExtra-shareagain/shareagain.css" rel="stylesheet" />
+    <script src="index_files/xaringanExtra-shareagain/shareagain.js"></script>
+    <script src="index_files/js-cookie/js.cookie.js"></script>
+    <script src="index_files/peerjs/peerjs.min.js"></script>
+    <script src="index_files/tiny.toast/toast.min.js"></script>
+    <link href="index_files/xaringanExtra-broadcast/broadcast.css" rel="stylesheet" />
+    <script src="index_files/xaringanExtra-broadcast/broadcast.js"></script>
+    <script src="index_files/fabric/fabric.min.js"></script>
+    <link href="index_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="index_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":3,"eraser_size":30,"palette":[]}) })</script>
+    <link href="index_files/animate.css/animate.xaringan.css" rel="stylesheet" />
+    <link href="index_files/animate.css-xaringan/animate.slide_left.css" rel="stylesheet" />
+    <link href="index_files/panelset/panelset.css" rel="stylesheet" />
+    <script src="index_files/panelset/panelset.js"></script>
+    <link href="index_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="index_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <script src="index_files/xaringanExtra_fit-screen/fit-screen.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -19,6 +41,8 @@ class: center, middle, inverse, title-slide
 ---
 
 name: prereqs
+
+
 
 
 
@@ -145,6 +169,8 @@ The data we will be using is a (real) time-series for a small mammal community i
 2. Short exercise: Explore the `portal_mammals.sqlite` database 
 
   a. Add a new field to one of the tables.
+  
+  b. Add a new row to one of the tables
 
 ---
 class: inverse center middle
@@ -320,6 +346,9 @@ surveys_tmp$weight_1000 &lt;- surveys_tmp$weight * 1000
 surveys %&gt;% select( year, month, day, weight) %&gt;% 
   mutate(weight_1000 = weight * 1000)
 ```
+
+---
+## Hands on
 
 ---
 ## Filtering data
