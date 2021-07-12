@@ -5,6 +5,8 @@
     <meta charset="utf-8" />
     <meta name="author" content="Valentin Lucet, M.Sc." />
     <script src="index_files/header-attrs/header-attrs.js"></script>
+    <link href="index_files/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="index_files/tile-view/tile-view.js"></script>
     <script src="index_files/clipboard/clipboard.min.js"></script>
     <link href="index_files/shareon/shareon.min.css" rel="stylesheet" />
     <script src="index_files/shareon/shareon.min.js"></script>
@@ -351,6 +353,19 @@ surveys %&gt;% select( year, month, day, weight) %&gt;%
 
 ---
 ## Hands on
+.panelset.sideways[
+.panel[.panel-name[Exercise]
+
+Write a query that returns the year, month, day, species_id and weight in mg.
+
+]
+.panel[.panel-name[Solution]
+```SQL
+SELECT day, month, year, species_id, weight * 1000
+FROM surveys;
+```
+]
+]
 
 ---
 ## Filtering data
@@ -466,6 +481,23 @@ AND (species_id IN ('DM', 'DO', 'DS'));
 ```
 
 ---
+## Hands on
+.panelset.sideways[
+.panel[.panel-name[Exercise]
+
+Produce a table listing the data for all individuals in Plot 1 that weighed more than 75 grams, telling us the date, species id code, and weight (in kg).
+
+]
+.panel[.panel-name[Solution]
+```SQL
+SELECT day, month, year, species_id, weight / 1000
+FROM surveys
+WHERE (plot_id = 1) AND (weight &gt; 75);
+```
+]
+]
+
+---
 ## Sorting data
 #### *Sorting based on a variable*
 
@@ -542,6 +574,23 @@ species %&gt;% arrange(genus, species)
 ```
 
 ---
+## Hands on
+.panelset.sideways[
+.panel[.panel-name[Exercise]
+
+Write a query that returns year, species_id, and weight in kg from the surveys table, sorted with the largest weights at the top.
+
+]
+.panel[.panel-name[Solution]
+```SQL
+SELECT year, species_id, weight / 1000
+FROM surveys
+ORDER BY weight DESC;
+```
+]
+]
+
+---
 ## Order of execution
 
 We don’t actually have to display a column to sort by it. For example, let’s say we want to order the birds by their species ID, but we only want to see genus and species.
@@ -558,6 +607,26 @@ The computer is basically doing this:
 1. Filtering rows according to `WHERE`
 2. Sorting results according to `ORDER BY`
 3. Displaying requested columns or expressions.
+
+---
+## Hands on
+.panelset.sideways[
+.panel[.panel-name[Exercise]
+
+Let’s try to combine what we’ve learned so far in a single query. Using the surveys table, write a query to display the three date fields, species_id, and weight in kilograms (rounded to two decimal places), for individuals captured in 1999, ordered alphabetically by the species_id.
+
+Write the query as a single line, then put each clause on its own line, and see how more legible the query becomes!
+
+]
+.panel[.panel-name[Solution]
+```SQL
+SELECT year, month, day, species_id, ROUND(weight / 1000, 2)
+FROM surveys
+WHERE year = 1999
+ORDER BY species_id;
+```
+]
+]
 
 ---
 class: inverse center middle
@@ -705,6 +774,32 @@ surveys %&gt;%
   summarise(count = n()) %&gt;% # Will keep NA row, like in SQL
   arrange(count)
 ```
+
+---
+## Hands on
+.panelset.sideways[
+.panel[.panel-name[Exercise]
+
+Write queries that return:
+
+  1. How many individuals were counted in each year in total
+  2. How many were counted each year, for each different species
+  3. The average weights of each species in each year
+
+]
+.panel[.panel-name[Solution]
+```SQL
+SELECT year, COUNT(*)
+FROM surveys
+GROUP BY year;
+```
+```SQL
+SELECT year, species_id, COUNT(*), AVG(weight)
+FROM surveys
+GROUP BY year, species_id;
+```
+]
+]
 
 ---
 ## Aliases
