@@ -51,6 +51,7 @@ xaringanExtra::use_animate_all("slide_left")
 xaringanExtra::use_panelset()
 xaringanExtra::use_clipboard()
 xaringanExtra::use_fit_screen()
+xaringanExtra::use_webcam()
 ```
 
 ### Prerequisites
